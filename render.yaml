@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: chrome-snapshot-service
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
