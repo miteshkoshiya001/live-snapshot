@@ -36,7 +36,7 @@ app.get("/test-chrome", async (req, res) => {
 
 // Screenshot endpoint
 app.get("/screenshot", async (req, res) => {
-  const { url } = req.query;
+  const { url, quality } = req.query;
   if (!url) return res.status(400).json({ error: "Missing URL" });
 
   try {
@@ -48,10 +48,10 @@ app.get("/screenshot", async (req, res) => {
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle2", timeout: 0 });
 
-    const screenshot = await page.screenshot({ type: "png", fullPage: true });
+    const screenshot = await page.screenshot({ type: "webp", fullPage: false, quality: quality ? parseInt(quality) : 25 });
     await browser.close();
 
-    res.set("Content-Type", "image/png");
+    res.set("Content-Type", "image/webp");
     res.send(screenshot);
   } catch (err) {
     console.error("Screenshot error:", err);
