@@ -95,6 +95,10 @@ async function takeScreenshot(url, fullPage = true, thumbnail = false, quality =
 }
 
 // --- API Endpoint ---
+// In your Express app, typically above your /screenshot route
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
 
 app.post('/screenshot', async (req, res) => {
   const { url, fullPage, thumbnail, quality } = req.body;
