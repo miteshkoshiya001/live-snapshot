@@ -1,7 +1,7 @@
 {
   "name": "live-preview-snap",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "snapshot.js",
   "scripts": {
     "start": "node snapshot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,10 +11,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^4.18.2",
-    "lodash": "^4.17.21",
+    "cors": "^2.8.5",    
+    "express": "^4.18.2",    
     "puppeteer": "^24.10.2"
   }
 }
