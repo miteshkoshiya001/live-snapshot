@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>1-20 Petal Flowers with No Overlap</title>
+    <script src="gsap.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 40px;
+        background: radial-gradient(circle at center, #eef8f0 0%, #cce0cc 100%);
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 60px;
+        width: 100%;
+        max-width: 2400px;
+      }
+
+      .flower-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      svg {
+        width: 620px;
+        height: 620px;
+      }
+
+      .label {
+        margin-top: 16px;
+        font-size: 1.5rem;
+        color: #333;
+        text-align: center;
+        line-height: 1.4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid"></div>
+    <script>
+      const grid = document.querySelector(".grid");
+
+      const gradientColors = [
+        ["#ffe6f0", "#ff99cc", "#cc3366"], // 1
+        ["#f0f5ff", "#a3c2ff", "#3366cc"], // 2
+        ["#fff0f5", "#e38da9", "#c05a77"], // 3
+        ["#fdf6e3", "#fdd692", "#ed8d2d"], // 4
+        ["#e6f7ff", "#99d6ea", "#3385ad"], // 5
+        ["#f0fff4", "#a7f3d0", "#10b981"], // 6
+        ["#fffbe6", "#ffe066", "#cc9a00"], // 7
+        ["#f3e8ff", "#c084fc", "#6b21a8"], // 8
+        ["#ffeff0", "#ff94a1", "#cc1f3a"], // 9
+        ["#e8f0fe", "#90caf9", "#1565c0"], // 10
+        ["#fef9e7", "#f9e79f", "#f1c40f"], // 11
+        ["#f5f5f5", "#d1d5db", "#6b7280"], // 12
+        ["#f0f9ff", "#7dd3fc", "#0284c7"], // 13
+        ["#fef3c7", "#fbbf24", "#d97706"], // 14
+        ["#f3e8ff", "#ddd6fe", "#8b5cf6"], // 15
+        ["#ecfdf5", "#86efac", "#16a34a"], // 16
+        ["#fdf2f8", "#f9a8d4", "#ec4899"], // 17
+        ["#f7fee7", "#bef264", "#65a30d"], // 18
+        ["#fef7ed", "#fed7aa", "#ea580c"], // 19
+        ["#f1f5f9", "#cbd5e1", "#475569"], // 20
+      ];
+
+      // Fixed petal shapes mapping
+      const petalShapeMapping = {
+        1: "Single Bloom",
+        2: "Single Bloom",
+        3: "Rounded Teardrop",
+        4: "Rounded Teardrop",
+        5: "Rounded Teardrop",
+        6: "Tapered Oval",
+        7: "Tapered Oval",
+        8: "Slim Lanceolate",
+        9: "Slim Lanceolate",
+        10: "Slim Lanceolate",
+        11: "Slim Lanceolate",
+        12: "Slim Lanceolate",
+        13: "Very Slim Lanceolate",
+        14: "Very Slim Lanceolate",
+        15: "Very Slim Lanceolate",
+        16: "Ultra Slim",
+        17: "Ultra Slim",
+        18: "Ultra Slim",
+        19: "Ultra Slim",
+        20: "Ultra Slim",
+      };
+
+      function calculatePetalDimensions(petalCount) {
+        // For petals 1-12, use original dimensions
+        if (petalCount) {
+          const baseHeight = 230 + (12 - petalCount) * 4;
+          return { baseHeight, maxPetalWidth: 120, scaleFactor: 1.0 };
+        }
+
+        // For petals 13-20, calculate safe dimensions
+        const baseAngle = 360 / petalCount;
+        const safeAngle = baseAngle * 0.85; // Use 85% of available space
+
+        // Calculate maximum petal width based on available angle
+        const radius = 200; // Distance from center
+        const maxWidth = 2 * radius * Math.sin((safeAngle * Math.PI) / 360);
+
+        // Scale factor for high petal counts
+        const scaleFactor = 0.8; // Less aggressive scaling
+
+        // Base dimensions
+        const baseHeight = 220 * scaleFactor;
+        const maxPetalWidth = Math.min(maxWidth * 0.5, 100 * scaleFactor);
+
+        return { baseHeight, maxPetalWidth, scaleFactor };
+      }
+
+      function generatePetalPath(petalCount) {
+        const { baseHeight, maxPetalWidth, scaleFactor } =
+          calculatePetalDimensions(petalCount);
+        let cx1, cy1, cx2, cy2;
+
+        // Fixed shapes based on petal count
+        const shapeName = petalShapeMapping[petalCount];
+
+        // For petals 1-12, use original fixed dimensions
+        if (petalCount) {
+          switch (shapeName) {
+            case "Single Bloom":
+              cx1 = 95;
+              cy1 = baseHeight - 50;
+              cx2 = 110;
+              cy2 = baseHeight - 25;
+              break;
+            case "Rounded Teardrop":
+              cx1 = 85;
+              cy1 = baseHeight - 50;
+              cx2 = 105;
+              cy2 = baseHeight - 25;
+              break;
+            case "Tapered Oval":
+              cx1 = 75;
+              cy1 = baseHeight - 50;
+              cx2 = 95;
+              cy2 = baseHeight - 25;
+              break;
+            case "Slim Lanceolate":
+              cx1 = 65;
+              cy1 = baseHeight - 50;
+              cx2 = 80;
+              cy2 = baseHeight - 25;
+              break;
+            case "Very Slim Lanceolate":
+              cx1 = 45;
+              cy1 = baseHeight - 50;
+              cx2 = 60;
+              cy2 = baseHeight - 25;
+              break;
+            case "Ultra Slim":
+              cx1 = 25;
+              cy1 = baseHeight - 50;
+              cx2 = 40;
+              cy2 = baseHeight - 25;
+              break;
+            default:
+              cx1 = 65;
+              cy1 = baseHeight - 50;
+              cx2 = 80;
+              cy2 = baseHeight - 25;
+          }
+        }
+
+        const path = `M0,-${baseHeight}
+          C${cx1},-${cy1} ${cx2},-${cy2} 0,0
+          C-${cx2},-${cy2} -${cx1},-${cy1} 0,-${baseHeight}
+          Z`;
+
+        return { path, shapeName };
+      }
+
+      for (let petalCount = 1; petalCount <= 20; petalCount++) {
+        const flowerId = `flower${petalCount}`;
+        const container = document.createElement("div");
+        container.classList.add("flower-container");
+
+        const [color1, color2, color3] = gradientColors[petalCount - 1];
+
+        const svg = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg"
+        );
+        svg.setAttribute("viewBox", "0 0 800 800");
+
+        const defs = `
+          <defs>
+            <radialGradient id="petalGradient${petalCount}" cx="50%" cy="50%" r="70%" fx="40%" fy="40%">
+              <stop offset="0%" stop-color="${color1}" />
+              <stop offset="65%" stop-color="${color2}" />
+              <stop offset="100%" stop-color="${color3}" />
+            </radialGradient>
+          </defs>
+        `;
+
+        const { path: petalPath, shapeName } = generatePetalPath(petalCount);
+        const baseAngle = 360 / petalCount;
+
+        // Calculate center size based on petal count
+        const centerRadius =
+          petalCount <= 12 ? 40 : Math.max(30, 45 - petalCount * 0.8);
+
+        const petals = Array.from({ length: petalCount })
+          .map((_, i) => {
+            const angle = baseAngle * i;
+            const skew = i % 2 === 0 ? -0.3 : 0.3; // Reduced skew for better fit
+            const scale = 1.0; // Fixed scale
+            return `
+              <path d="${petalPath}"
+                fill="url(#petalGradient${petalCount})"
+                transform="rotate(${angle}) scale(${scale}) skewX(${skew})"
+                style="
+                  stroke: rgba(0,0,0,0.12);
+                  stroke-width: 1;
+                  filter: drop-shadow(0 6px 8px rgba(0,0,0,0.2));
+                  opacity: 0.94;
+                "/>
+            `;
+          })
+          .join("");
+
+        const center = `
+          <circle cx="400" cy="400" r="${centerRadius}"
+            fill="goldenrod"
+            stroke="#8a6c00"
+            stroke-width="2"
+            filter="drop-shadow(0 2px 3px rgba(0,0,0,0.3))" />
+        `;
+
+        svg.innerHTML =
+          defs +
+          `<g id="${flowerId}" transform="translate(400,400)">${petals}</g>${center}`;
+
+        const label = document.createElement("div");
+        label.classList.add("label");
+        label.innerHTML = `<strong>${petalCount} Petal${
+          petalCount > 1 ? "s" : ""
+        }</strong><br/><em>${shapeName}</em>`;
+
+        container.appendChild(svg);
+        container.appendChild(label);
+        grid.appendChild(container);
+
+        // Bloom animation
+        gsap.from(`#${flowerId} path`, {
+          scale: 0.2,
+          transformOrigin: "center",
+          opacity: 0,
+          stagger: 0.06,
+          duration: 1.4,
+          ease: "elastic.out(1, 0.4)",
+        });
+
+        // Gentle rotation animation
+        gsap.to(`#${flowerId}`, {
+          rotate: 2,
+          duration: 4 + petalCount * 0.1,
+          yoyo: true,
+          repeat: -1,
+          ease: "sine.inOut",
+        });
+      }
+    </script>
+  </body>
+</html>
